@@ -7,6 +7,7 @@ import { getRandomInRange } from '../utils';
 import { Ball } from './ball';
 import { Cell } from './cell';
 import { Circle } from './circle';
+import { getBoomBall } from '../boomPos';
 
 export class Board extends Container {
     cells: Cell[];
@@ -117,7 +118,7 @@ export class Board extends Container {
                     this.cells[indexEl].addChild(this.cells[indexAcc].ball);
                     this.cells[indexEl].ball = this.cells[indexAcc].ball;
                     this.cells[indexAcc].ball = null;
-                    res(true);
+                    res(paths[paths.length - 1]);
                 }, 100 * i);
                 this.matrixCells[acc[1]][acc[0]] = 0;
                 this.matrixCells[el[1]][el[0]] = 1;
@@ -130,6 +131,9 @@ export class Board extends Container {
             this.cells.forEach((el) => {
                 el.interactive = true;
             });
+            const boomBalls = getBoomBall(this.cells, result[0]);
+            console.log(boomBalls);
+
             return this.buildCellBall(3);
         });
     }
