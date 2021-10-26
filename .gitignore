@@ -1,15 +1,48 @@
-# Compiled source #
-###################
+# ignore all files starting with . or ~
+.*
+~*
+!.eslintrc.js
+!.prettierrc.js
+!.eslintignore
+!.github
+!.keep
+
+# ignore node/grunt dependency directories
+node_modules/
+
+# ignore composer vendor directory
+/vendor
+
+# ignore components loaded via Bower
+/bower_components
+
+# ignore jekyll build directory
+/_site
+/dist
+
+# ignore OS generated files
+ehthumbs.db
+Thumbs.db
+
+# ignore Editor files
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# ignore compiled files
 *.com
 *.class
 *.dll
 *.exe
 *.o
 *.so
-dist/
 
-# Packages #
-############
+# ignore packaged files
 *.7z
 *.dmg
 *.gz
@@ -19,29 +52,16 @@ dist/
 *.tar
 *.zip
 
-# Logs and databases #
-######################
-*.log
-*.sql
-*.sqlite
+# ignore private/secret files
+*.der
+*.key
+*.pem
 
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
+# -------------------------
+# BEGIN Whitelisted Files
+# -------------------------
 
-# NODEJS #
-##########
-node_modules
-node_modules/*
-build
-build/*
-/package-lock.json
-
-# EDITOR #
-##########
-.idea
+# track these files, if they exist
+!.gitignore
+!.editorconfig
+!.phpcs.xml.dist

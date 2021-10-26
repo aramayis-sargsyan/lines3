@@ -1,9 +1,0 @@
-node_modules/*
-public/*
-build/*
-config/*
-js/display/*
-js/kernel/*
-js/lib/*
-modules/xp-core.js
-gulpfile.js
