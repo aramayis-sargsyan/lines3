@@ -1,11 +1,11 @@
-import { Container } from 'pixi.js';
-import { Cell } from './cell';
-import { BoardConfig } from '../config';
-import { Ball } from './ball';
 import { sampleSize } from 'lodash';
+import * as PF from 'pathfinding';
+import { Container } from 'pixi.js';
+import { BoardConfig } from '../config';
 import { colors } from '../const';
 import { getRandomInRange } from '../utils';
-import * as PF from 'pathfinding';
+import { Ball } from './ball';
+import { Cell } from './cell';
 import { Circle } from './circle';
 
 export class Board extends Container {
@@ -42,6 +42,7 @@ export class Board extends Container {
                 this.addChild(boardCell);
             }
             this.matrixCells.push([...arr]);
+            arr.push([...arr]);
         }
     }
 
@@ -104,14 +105,32 @@ export class Board extends Container {
     }
 
     _moveBall(paths) {
-        // const { cell_count, queue_balls_count } = BoardConfig;
-        // this.matrixCells[paths[0][1]][paths[0][0]] = 0;
-        // this.matrixCells[paths[paths.length - 1][1]][paths[paths.length - 1][0]] = 1;
-        // let indexStart = paths[0][1] * cell_count + paths[0][0];
-        // let indexEnd = paths[paths.length - 1][1] * cell_count + paths[paths.length - 1][0];
-        // this.cells[indexEnd].ball = this.cells[indexStart].ball;
-        // this.cells[indexEnd].addChild(this.cells[indexStart].ball);
-        // this.cells[indexStart].ball = null;
-        paths.reduce((acc, el) => {});
+        this.cells.forEach((el) => {
+            el.interactive = false;
+        });
+        const promises = [];
+        paths.reduce((acc, el, i) => {
+            const prom = new Promise((res) => {
+                setTimeout(() => {
+                    const indexEl = el[1] * 9 + el[0];
+                    const indexAcc = acc[1] * 9 + acc[0];
+                    this.cells[indexEl].addChild(this.cells[indexAcc].ball);
+                    this.cells[indexEl].ball = this.cells[indexAcc].ball;
+                    this.cells[indexAcc].ball = null;
+                    res(true);
+                }, 100 * i);
+                this.matrixCells[acc[1]][acc[0]] = 0;
+                this.matrixCells[el[1]][el[0]] = 1;
+            });
+            promises.push(prom);
+            return el;
+        });
+
+        Promise.all(promises).then((result) => {
+            this.cells.forEach((el) => {
+                el.interactive = true;
+            });
+            return this.buildCellBall(3);
+        });
     }
 }
