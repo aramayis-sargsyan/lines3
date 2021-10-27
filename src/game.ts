@@ -46,11 +46,11 @@ export class Game extends PIXI.Application {
         const { cell_width, cell_line_style, initial_balls_count } = BoardConfig;
 
         const board = new Board();
-        board.buildCell();
+        board.buildCells();
         board.pivot.set(board.width * 0.5, board.height * 0.5);
         board.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.6);
         this.stage.addChild(board);
-        board.buildCellBall(initial_balls_count);
+        board.buildCellBalls(initial_balls_count);
     }
 
     _update() {}

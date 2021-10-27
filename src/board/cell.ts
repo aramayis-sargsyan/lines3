@@ -18,7 +18,7 @@ export class Cell extends Graphics {
         this.on('pointerdown', this._onClick, this);
     }
 
-    buildCell(lineStyle) {
+    build(lineStyle) {
         const { cell_width, cell_radius } = BoardConfig;
         this.lineStyle(lineStyle, 0x000000);
         this.beginFill(0xffffff);

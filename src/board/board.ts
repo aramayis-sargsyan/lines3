@@ -13,16 +13,18 @@ export class Board extends Container {
     cells: Cell[];
     balls: Ball[];
     matrixCells: number[][];
-    circleBall: Ball;
+    activeBall: Ball;
+    boomBalls: Ball[][];
     constructor() {
         super();
         this.cells = [];
         this.balls = [];
-        this.circleBall = null;
+        this.activeBall = null;
         this.matrixCells = [];
+        this.boomBalls = [];
     }
 
-    buildCell() {
+    buildCells() {
         const { cell_count, cell_width } = BoardConfig;
         for (let i = 0; i < cell_count; i++) {
             const arr = [];
@@ -36,7 +38,7 @@ export class Board extends Container {
                 boardCell.ball = null;
                 boardCell.i = j;
                 boardCell.j = i;
-                boardCell.buildCell(0);
+                boardCell.build(0);
                 boardCell.position.set(j * (cell_width + 1), i * (cell_width + 1));
                 boardCell.tint = (i + j) % 2 === 0 ? 0x888888 : 0xbbbbbb;
                 this.cells.push(boardCell);
@@ -47,7 +49,7 @@ export class Board extends Container {
         }
     }
 
-    buildCellBall(ballCount) {
+    buildCellBalls(ballCount) {
         let color = 0;
         const { cell_width, queue_balls_count } = BoardConfig;
         const emptyCells = this.cells.filter((cell) => {
@@ -74,27 +76,27 @@ export class Board extends Container {
     }
 
     buildCircle(cell) {
-        if (this.circleBall) {
-            this.circleBall.circle.destroy();
-            this.circleBall.circle = null;
-            this.circleBall.IsActive = false;
+        if (this.activeBall) {
+            this.activeBall.circle.destroy();
+            this.activeBall.circle = null;
+            this.activeBall.IsActive = false;
         }
 
         if (cell.ball !== null) {
-            this.circleBall = cell.ball;
+            this.activeBall = cell.ball;
             const circle = new Circle();
-            this.circleBall.circle = circle;
-            this.circleBall.i = cell.i;
-            this.circleBall.j = cell.j;
-            this.circleBall.IsActive = true;
+            this.activeBall.circle = circle;
+            this.activeBall.i = cell.i;
+            this.activeBall.j = cell.j;
+            this.activeBall.IsActive = true;
             this.addChild(cell);
-            this.circleBall.addChild(circle);
+            this.activeBall.addChild(circle);
         } else {
-            if (this.circleBall) {
-                const paths = this.getPath(this.circleBall.i, this.circleBall.j, cell.i, cell.j);
+            if (this.activeBall) {
+                const paths = this.getPath(this.activeBall.i, this.activeBall.j, cell.i, cell.j);
                 paths.length && this._moveBall(paths);
             }
-            this.circleBall = null;
+            this.activeBall = null;
         }
     }
 
@@ -117,6 +119,8 @@ export class Board extends Container {
                     const indexAcc = acc[1] * 9 + acc[0];
                     this.cells[indexEl].addChild(this.cells[indexAcc].ball);
                     this.cells[indexEl].ball = this.cells[indexAcc].ball;
+                    this.cells[indexEl].ball.i = Math.floor(indexEl / 9);
+                    this.cells[indexEl].ball.j = indexEl % 9;
                     this.cells[indexAcc].ball = null;
                     res(paths[paths.length - 1]);
                 }, 100 * i);
@@ -131,10 +135,34 @@ export class Board extends Container {
             this.cells.forEach((el) => {
                 el.interactive = true;
             });
-            const boomBalls = getBoomBall(this.cells, result[0]);
-            console.log(boomBalls);
+            setTimeout(() => {
+                this.boomBalls = getBoomBall(this.cells, result[0]);
+                this.boomBall(result[0]);
+            });
 
-            return this.buildCellBall(3);
+            return this.buildCellBalls(3);
         });
+    }
+
+    boomBall(result) {
+        let count = 0;
+        for (let i = 0; i < this.boomBalls.length; i++) {
+            if (this.boomBalls[i].length >= 5) {
+                count += 1;
+                for (let j = 0; j < this.boomBalls[i].length; j++) {
+                    if (this.cells[9 * result[1] + result[0]].ball !== this.boomBalls[i][j]) {
+                        this.boomBalls[i][j].destroy();
+                        this.boomBalls[i][j] = null;
+
+                        // this.matrixCells[][]
+                    }
+                }
+            }
+        }
+        if (count > 0) {
+            this.cells[9 * result[1] + result[0]].ball.destroy();
+
+            this.cells[9 * result[1] + result[0]].ball = null;
+        }
     }
 }
