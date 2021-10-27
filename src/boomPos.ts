@@ -10,9 +10,6 @@ export const getBoomBall = (cells, pos) => {
     let diagonalRight = [];
 
     for (let i = 0; i < cell_count; i++) {
-        console.log(cells[i * cell_count + pos[0]].ball);
-        console.log(i * cell_count + pos[0]);
-
         if (
             cells[i * cell_count + pos[0]].ball &&
             cells[i * cell_count + pos[0]].ball.color === cells[pos[1] * cell_count + pos[0]].ball.color
@@ -24,7 +21,6 @@ export const getBoomBall = (cells, pos) => {
         if (verticals.length >= match_balls_count) {
             arr[0] = [];
             arr[0].push(...verticals);
-            console.log(arr);
         }
 
         if (

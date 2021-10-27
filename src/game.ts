@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Board } from './board/board';
 import { BoardConfig } from './config';
+import { Queue } from './queue';
 
 export class Game extends PIXI.Application {
     constructor() {
@@ -21,6 +22,7 @@ export class Game extends PIXI.Application {
 
     _onLoadComplete() {
         this.buildBoard();
+        this.buildQueue();
     }
 
     _resize(width?, height?) {
@@ -51,6 +53,14 @@ export class Game extends PIXI.Application {
         board.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.6);
         this.stage.addChild(board);
         board.buildCellBalls(initial_balls_count);
+    }
+    buildQueue() {
+        const { cell_width, cell_line_style } = BoardConfig;
+        const queue = new Queue();
+        queue.buildCell();
+        queue.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.05);
+        queue.pivot.set(queue.width * 0.5, queue.height * 0.5);
+        this.stage.addChild(queue);
     }
 
     _update() {}

@@ -6,6 +6,7 @@ export class Ball extends Graphics {
     j: number;
     IsActive: boolean;
     circle: Circle;
+    color: number;
 
     constructor() {
         super();

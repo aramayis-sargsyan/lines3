@@ -110,6 +110,7 @@ export class Board extends Container {
 
     _moveBall(paths) {
         const { cell_count, queue_balls_count } = BoardConfig;
+        let ballCount = queue_balls_count;
 
         this.cells.forEach((el) => {
             el.interactive = false;
@@ -141,12 +142,17 @@ export class Board extends Container {
             });
             setTimeout(() => {
                 this.boomBalls = getBoomBall(this.cells, result[0]);
-                console.log(this.boomBalls);
 
                 this.boomBall(result[0]);
-            });
 
-            return this.buildCellBalls(queue_balls_count);
+                const checkLength = this.boomBalls.find((item) => {
+                    return item.length > 0;
+                });
+                if (checkLength) {
+                    ballCount = 0;
+                }
+                return this.buildCellBalls(ballCount);
+            });
         });
     }
 
@@ -160,12 +166,9 @@ export class Board extends Container {
                 for (let j = 0; j < this.boomBalls[i].length; j++) {
                     if (this.cells[cell_count * result[1] + result[0]].ball !== this.boomBalls[i][j]) {
                         this.boomBalls[i][j].destroy();
-                        console.log(this.matrixCells);
-                        console.log(this.cells);
 
                         this.matrixCells[this.boomBalls[i][j].i][this.boomBalls[i][j].j] = 0;
                         this.cells[this.boomBalls[i][j].j + this.boomBalls[i][j].i * cell_count].ball = null;
-                        console.log(this.matrixCells);
                     }
                 }
             }
