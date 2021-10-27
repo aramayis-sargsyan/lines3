@@ -1,14 +1,13 @@
 import { sampleSize } from 'lodash';
 import * as PF from 'pathfinding';
 import { Container } from 'pixi.js';
+import { getBoomBall } from '../boomPos';
 import { BoardConfig } from '../config';
 import { colors } from '../const';
 import { getRandomInRange } from '../utils';
 import { Ball } from './ball';
 import { Cell } from './cell';
 import { Circle } from './circle';
-import { getBoomBall } from '../boomPos';
-
 export class Board extends Container {
     cells: Cell[];
     balls: Ball[];
@@ -51,7 +50,7 @@ export class Board extends Container {
 
     buildCellBalls(ballCount) {
         let color = 0;
-        const { cell_width, queue_balls_count } = BoardConfig;
+        const { cell_width, queue_balls_count, cell_count } = BoardConfig;
         const emptyCells = this.cells.filter((cell) => {
             return cell.ball === null;
         });
@@ -62,11 +61,13 @@ export class Board extends Container {
             boardBall.buildBall();
             boardBall.IsActive = false;
             boardBall.circle = null;
-            boardBall.j = null;
-            boardBall.i = null;
+            boardBall.j = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].j;
+            boardBall.i = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].i;
+
             initial_cell[i].ball = boardBall;
             color = Math.floor(getRandomInRange(0, 5));
             initial_cell[i].ball.tint = colors[color];
+            boardBall.color = colors[color];
             this.balls.push(initial_cell[i].ball);
             initial_cell[i].addChild(initial_cell[i].ball);
 
@@ -108,6 +109,8 @@ export class Board extends Container {
     }
 
     _moveBall(paths) {
+        const { cell_count, queue_balls_count } = BoardConfig;
+
         this.cells.forEach((el) => {
             el.interactive = false;
         });
@@ -115,12 +118,13 @@ export class Board extends Container {
         paths.reduce((acc, el, i) => {
             const prom = new Promise((res) => {
                 setTimeout(() => {
-                    const indexEl = el[1] * 9 + el[0];
-                    const indexAcc = acc[1] * 9 + acc[0];
+                    const indexEl = el[1] * cell_count + el[0];
+                    const indexAcc = acc[1] * cell_count + acc[0];
                     this.cells[indexEl].addChild(this.cells[indexAcc].ball);
                     this.cells[indexEl].ball = this.cells[indexAcc].ball;
-                    this.cells[indexEl].ball.i = Math.floor(indexEl / 9);
-                    this.cells[indexEl].ball.j = indexEl % 9;
+                    this.cells[indexEl].ball.i = Math.floor(indexEl / cell_count);
+                    this.cells[indexEl].ball.j = indexEl % cell_count;
+
                     this.cells[indexAcc].ball = null;
                     res(paths[paths.length - 1]);
                 }, 100 * i);
@@ -137,32 +141,39 @@ export class Board extends Container {
             });
             setTimeout(() => {
                 this.boomBalls = getBoomBall(this.cells, result[0]);
+                console.log(this.boomBalls);
+
                 this.boomBall(result[0]);
             });
 
-            return this.buildCellBalls(3);
+            return this.buildCellBalls(queue_balls_count);
         });
     }
 
     boomBall(result) {
+        const { cell_count, match_balls_count } = BoardConfig;
+
         let count = 0;
         for (let i = 0; i < this.boomBalls.length; i++) {
-            if (this.boomBalls[i].length >= 5) {
+            if (this.boomBalls[i].length >= match_balls_count) {
                 count += 1;
                 for (let j = 0; j < this.boomBalls[i].length; j++) {
-                    if (this.cells[9 * result[1] + result[0]].ball !== this.boomBalls[i][j]) {
+                    if (this.cells[cell_count * result[1] + result[0]].ball !== this.boomBalls[i][j]) {
                         this.boomBalls[i][j].destroy();
-                        this.boomBalls[i][j] = null;
+                        console.log(this.matrixCells);
+                        console.log(this.cells);
 
-                        // this.matrixCells[][]
+                        this.matrixCells[this.boomBalls[i][j].i][this.boomBalls[i][j].j] = 0;
+                        this.cells[this.boomBalls[i][j].j + this.boomBalls[i][j].i * cell_count].ball = null;
+                        console.log(this.matrixCells);
                     }
                 }
             }
         }
         if (count > 0) {
-            this.cells[9 * result[1] + result[0]].ball.destroy();
-
-            this.cells[9 * result[1] + result[0]].ball = null;
+            this.cells[cell_count * result[1] + result[0]].ball.destroy();
+            this.matrixCells[result[1]][result[0]] = 0;
+            this.cells[cell_count * result[1] + result[0]].ball = null;
         }
     }
 }
