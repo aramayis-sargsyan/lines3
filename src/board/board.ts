@@ -14,6 +14,7 @@ export class Board extends Container {
     matrixCells: number[][];
     activeBall: Ball;
     boomBalls: Ball[][];
+    queCollors: number[];
     constructor() {
         super();
         this.cells = [];
@@ -21,6 +22,7 @@ export class Board extends Container {
         this.activeBall = null;
         this.matrixCells = [];
         this.boomBalls = [];
+        this.queCollors = [];
     }
 
     buildCells() {
@@ -48,7 +50,7 @@ export class Board extends Container {
         }
     }
 
-    buildCellBalls(ballCount) {
+    buildCellBalls(ballCount, collor) {
         let color = 0;
         const { cell_width, queue_balls_count, cell_count } = BoardConfig;
         const emptyCells = this.cells.filter((cell) => {
@@ -58,14 +60,20 @@ export class Board extends Container {
 
         for (let i = 0; i < ballCount; i++) {
             const boardBall = new Ball();
-            boardBall.buildBall();
+            boardBall.build();
             boardBall.IsActive = false;
             boardBall.circle = null;
             boardBall.j = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].j;
             boardBall.i = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].i;
 
             initial_cell[i].ball = boardBall;
-            color = Math.floor(getRandomInRange(0, 5));
+
+            if (collor) {
+                color = collor[i];
+                console.log(color);
+            } else {
+                color = Math.floor(getRandomInRange(0, 5));
+            }
             initial_cell[i].ball.tint = colors[color];
             boardBall.color = colors[color];
             this.balls.push(initial_cell[i].ball);
@@ -151,7 +159,10 @@ export class Board extends Container {
                 if (checkLength) {
                     ballCount = 0;
                 }
-                return this.buildCellBalls(ballCount);
+
+                //
+                this._onCheck();
+                return this.buildCellBalls(ballCount, this.queCollors);
             });
         });
     }
@@ -178,5 +189,9 @@ export class Board extends Container {
             this.matrixCells[result[1]][result[0]] = 0;
             this.cells[cell_count * result[1] + result[0]].ball = null;
         }
+    }
+
+    _onCheck() {
+        this.emit('onCheck', this);
     }
 }

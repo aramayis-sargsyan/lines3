@@ -2,8 +2,12 @@ import * as PIXI from 'pixi.js';
 import { Board } from './board/board';
 import { BoardConfig } from './config';
 import { Queue } from './queue';
+import { Score } from './score';
 
 export class Game extends PIXI.Application {
+    board: Board;
+    queue: Queue;
+    x: number[];
     constructor() {
         super({
             width: window.innerWidth,
@@ -23,6 +27,7 @@ export class Game extends PIXI.Application {
     _onLoadComplete() {
         this.buildBoard();
         this.buildQueue();
+        this.creteScore();
     }
 
     _resize(width?, height?) {
@@ -47,20 +52,41 @@ export class Game extends PIXI.Application {
     buildBoard() {
         const { cell_width, cell_line_style, initial_balls_count } = BoardConfig;
 
-        const board = new Board();
-        board.buildCells();
-        board.pivot.set(board.width * 0.5, board.height * 0.5);
-        board.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.6);
-        this.stage.addChild(board);
-        board.buildCellBalls(initial_balls_count);
+        this.board = new Board();
+        this.board.buildCells();
+        this.board.pivot.set(this.board.width * 0.5, this.board.height * 0.5);
+        this.board.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.6);
+        this.stage.addChild(this.board);
+        this.board.buildCellBalls(initial_balls_count, null);
+        this.board.on('onCheck', this.callQue, this);
     }
     buildQueue() {
         const { cell_width, cell_line_style } = BoardConfig;
-        const queue = new Queue();
-        queue.buildCell();
-        queue.position.set(this.screen.width * 0.5 + (cell_width + cell_line_style) / 2, this.screen.height * 0.05);
-        queue.pivot.set(queue.width * 0.5, queue.height * 0.5);
-        this.stage.addChild(queue);
+        this.queue = new Queue();
+        this.queue.on('transferColor', this.transferColor, this);
+        this.queue.buildCell();
+        this.queue.position.set(
+            this.screen.width * 0.5 + (cell_width + cell_line_style) / 2,
+            this.screen.height * 0.05,
+        );
+        this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
+        this.queue.buildBall();
+        this.stage.addChild(this.queue);
+    }
+
+    transferColor(collors) {
+        this.x = collors;
+    }
+
+    callQue() {
+        const { queue_balls_count } = BoardConfig;
+
+        this.board.queCollors = this.x;
+        this.queue.buildBall();
+    }
+    creteScore() {
+        const score = new Score();
+        score.getScore();
     }
 
     _update() {}

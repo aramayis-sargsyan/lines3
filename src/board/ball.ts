@@ -12,7 +12,7 @@ export class Ball extends Graphics {
         super();
     }
 
-    buildBall() {
+    build() {
         const { ball_width } = BoardConfig;
 
         this.beginFill(0xffffff);

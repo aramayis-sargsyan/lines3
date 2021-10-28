@@ -11,8 +11,10 @@ export class Queue extends Container {
     queueCell: Cell;
     queBall: Ball;
     colors: number;
+    queColors: number[];
     constructor() {
         super();
+        this.queColors = [];
         this.queueCells = [];
     }
 
@@ -28,18 +30,24 @@ export class Queue extends Container {
             this.queueCells.push(queueCell);
             this.addChild(queueCell);
         }
-        this.buildQueueBall();
     }
-    buildQueueBall() {
-        const { queue_balls_count } = BoardConfig;
 
+    buildBall() {
+        const { queue_balls_count } = BoardConfig;
         for (let i = 0; i < queue_balls_count; i++) {
             const ball = new Ball();
-            ball.buildBall();
+            ball.build();
             const color = Math.floor(getRandomInRange(0, 5));
             ball.tint = colors[color];
+            this.queColors.push(color);
             this.queueCells[i].setBall(this.queueCells[i], ball);
             this.queueCells[i].addChild(ball);
         }
+        this.transferColor();
+    }
+
+    transferColor() {
+        this.emit('transferColor', this.queColors);
+        this.queColors = [];
     }
 }
