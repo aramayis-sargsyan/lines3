@@ -39,7 +39,8 @@ export class Board extends Container {
                 boardCell.ball = null;
                 boardCell.i = j;
                 boardCell.j = i;
-                boardCell.build(0);
+
+                boardCell.build(0, cell_width);
                 boardCell.position.set(j * (cell_width + 1), i * (cell_width + 1));
                 boardCell.tint = (i + j) % 2 === 0 ? 0x888888 : 0xbbbbbb;
                 this.cells.push(boardCell);
@@ -56,6 +57,7 @@ export class Board extends Container {
         const emptyCells = this.cells.filter((cell) => {
             return cell.ball === null;
         });
+
         const initial_cell = sampleSize(emptyCells, ballCount);
 
         for (let i = 0; i < ballCount; i++) {
@@ -63,6 +65,11 @@ export class Board extends Container {
             boardBall.build();
             boardBall.IsActive = false;
             boardBall.circle = null;
+
+            if (!initial_cell[i]) {
+                this._onCheck('game over');
+            }
+
             boardBall.j = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].j;
             boardBall.i = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].i;
 
@@ -70,7 +77,6 @@ export class Board extends Container {
 
             if (collor) {
                 color = collor[i];
-                console.log(color);
             } else {
                 color = Math.floor(getRandomInRange(0, 5));
             }

@@ -10,7 +10,6 @@ export class Score extends Text {
     }
 
     getYourScore() {
-        console.log();
         const style = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,
@@ -34,9 +33,6 @@ export class Score extends Text {
         this.addChild(text);
     }
     getHighScore() {
-        console.log('gfgfh');
-
-        console.log(this.highScore);
         const style = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,

@@ -18,11 +18,11 @@ export class Cell extends Graphics {
         this.on('pointerdown', this._onClick, this);
     }
 
-    build(lineStyle) {
-        const { cell_width, cell_radius } = BoardConfig;
+    build(lineStyle, cellWidth) {
+        const { cell_radius } = BoardConfig;
         this.lineStyle(lineStyle, 0x000000);
         this.beginFill(0xffffff);
-        this.drawRoundedRect(lineStyle, lineStyle, cell_width - lineStyle, cell_width - lineStyle, cell_radius);
+        this.drawRoundedRect(lineStyle, lineStyle, cellWidth - lineStyle, cellWidth - lineStyle, cell_radius);
         this.endFill();
 
         this.pivot.x = this.width / 2;
