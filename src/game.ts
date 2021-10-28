@@ -89,9 +89,6 @@ export class Game extends PIXI.Application {
 
             this.loseGame();
 
-            setTimeout(() => {
-                this.destroyContainer();
-            }, 2000);
             if (this.los.click) {
                 console.log(7);
 

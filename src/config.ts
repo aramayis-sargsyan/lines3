@@ -8,6 +8,6 @@ export const BoardConfig = {
     initial_balls_count: 75,
     match_balls_count: 5,
     circle_width: 30,
-    phopap_width: 300,
-    phopap_height: 200,
+    phopap_width: 200,
+    phopap_height: 300,
 };
