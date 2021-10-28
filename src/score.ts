@@ -1,13 +1,16 @@
 import { Text, TextStyle } from 'pixi.js';
 
 export class Score extends Text {
+    highScore: number;
+    yourScore: number;
     constructor() {
         super('');
+        this.yourScore = 0;
+        this.highScore = 0;
     }
 
     getYourScore() {
         console.log();
-        let score = 0;
         const style = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,
@@ -24,14 +27,16 @@ export class Score extends Text {
             wordWrapWidth: 440,
             lineJoin: 'round',
         });
-        let text = new Text(`Your Score : ${score}`, style);
+
+        let text = new Text(`Your Score : ${this.yourScore}`, style);
         text.pivot.x = text.width / 2;
         text.pivot.y = text.height / 2;
         this.addChild(text);
     }
     getHighScore() {
-        console.log();
-        let score = 0;
+        console.log('gfgfh');
+
+        console.log(this.highScore);
         const style = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,
@@ -48,9 +53,10 @@ export class Score extends Text {
             wordWrapWidth: 440,
             lineJoin: 'round',
         });
-        let text = new Text(`High Score : ${score}`, style);
+        let text = new Text(`High highScore : ${this.highScore}`, style);
         text.pivot.x = text.width / 2;
         text.pivot.y = text.height / 2;
+        this.highScore += 5;
         this.addChild(text);
     }
 }

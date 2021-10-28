@@ -157,11 +157,12 @@ export class Board extends Container {
                     return item.length > 0;
                 });
                 if (checkLength) {
+                    this._onCheck(checkLength.length);
                     ballCount = 0;
                 }
 
                 //
-                this._onCheck();
+                this._onCheck(0);
                 return this.buildCellBalls(ballCount, this.queCollors);
             });
         });
@@ -191,7 +192,7 @@ export class Board extends Container {
         }
     }
 
-    _onCheck() {
-        this.emit('onCheck', this);
+    _onCheck(x) {
+        this.emit('onCheck', x);
     }
 }

@@ -7,6 +7,9 @@ import { Score } from './score';
 export class Game extends PIXI.Application {
     board: Board;
     queue: Queue;
+    score: Score;
+    score1: Score;
+
     x: number[];
     constructor() {
         super({
@@ -78,25 +81,26 @@ export class Game extends PIXI.Application {
         this.x = collors;
     }
 
-    callQue() {
+    callQue(x) {
         const { queue_balls_count } = BoardConfig;
-
+        this.score.yourScore += x;
+        console.warn(this.score.yourScore);
         this.board.queCollors = this.x;
         this.queue.buildBall();
     }
 
     creteScore() {
-        const score = new Score();
-        score.getYourScore();
-        const score1 = new Score();
+        this.score = new Score();
+        this.score.getYourScore();
+        this.score1 = new Score();
 
-        score1.getHighScore();
-        score.position.set(this.screen.width * 0.5, this.screen.height * 0.15);
+        this.score1.getHighScore();
+        this.score.position.set(this.screen.width * 0.5, this.screen.height * 0.15);
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
-        score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
+        this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
-        this.stage.addChild(score);
-        this.stage.addChild(score1);
+        this.stage.addChild(this.score);
+        this.stage.addChild(this.score1);
     }
 
     _update() {}
