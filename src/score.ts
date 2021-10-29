@@ -1,11 +1,11 @@
-import { Text, TextStyle } from 'pixi.js';
+import { Container, Text, TextStyle } from 'pixi.js';
 
-export class Score extends Text {
+export class Score extends Container {
     highScore: number;
     yourScore: number;
     style: TextStyle;
     constructor() {
-        super('');
+        super();
 
         this.style = new TextStyle({
             fontFamily: 'Arial',
@@ -31,24 +31,19 @@ export class Score extends Text {
         }
     }
 
-    getYourScore() {
-        let text = new Text(`Your score ${this.yourScore}`, this.style);
+    getYourScore(score) {
+        let text = new Text(`Your score ${score}`, this.style);
         text.pivot.x = text.width / 2;
         text.pivot.y = text.height / 2;
+        text.position.set(0, 0);
         this.addChild(text);
     }
 
-    getHighScore() {
-        let textObj = new Text(`High score ${this.highScore}`, this.style);
+    getHighScore(score) {
+        let textObj = new Text(`High score ${score}`, this.style);
         textObj.pivot.x = textObj.width / 2;
         textObj.pivot.y = textObj.height / 2;
-        this.addChild(textObj);
-    }
-
-    changeScore(type, score) {
-        let textObj = new Text(`${type} score ${score}`, this.style);
-        textObj.pivot.x = textObj.width / 2;
-        textObj.pivot.y = textObj.height / 2;
+        textObj.position.set(0, 50);
         this.addChild(textObj);
     }
 }

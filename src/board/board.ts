@@ -66,27 +66,26 @@ export class Board extends Container {
             boardBall.IsActive = false;
             boardBall.circle = null;
 
-            if (!initial_cell[i]) {
-                this._onCheck('game over');
+            if (initial_cell[i]) {
+                boardBall.j = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].j;
+                boardBall.i = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].i;
+                initial_cell[i].ball = boardBall;
+                if (collor) {
+                    color = collor[i];
+                } else {
+                    color = Math.floor(getRandomInRange(0, 5));
+                }
+                initial_cell[i].ball.tint = colors[color];
+                boardBall.color = colors[color];
+                this.balls.push(initial_cell[i].ball);
+                initial_cell[i].addChild(initial_cell[i].ball);
+
+                initial_cell[i].setBall(initial_cell[i], boardBall);
+                this.matrixCells[initial_cell[i].j][initial_cell[i].i] = 1;
             }
-
-            boardBall.j = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].j;
-            boardBall.i = this.cells[initial_cell[i].i * cell_count + initial_cell[i].j].i;
-
-            initial_cell[i].ball = boardBall;
-
-            if (collor) {
-                color = collor[i];
-            } else {
-                color = Math.floor(getRandomInRange(0, 5));
-            }
-            initial_cell[i].ball.tint = colors[color];
-            boardBall.color = colors[color];
-            this.balls.push(initial_cell[i].ball);
-            initial_cell[i].addChild(initial_cell[i].ball);
-
-            initial_cell[i].setBall(initial_cell[i], boardBall);
-            this.matrixCells[initial_cell[i].j][initial_cell[i].i] = 1;
+        }
+        if (this.balls.length >= 79) {
+            this._onCheck('game over');
         }
     }
 

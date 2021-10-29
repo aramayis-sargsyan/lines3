@@ -24,8 +24,6 @@ export class Game extends PIXI.Application {
 
         this.ticker.add(this._update, this);
         this.ticker.start();
-        this.score = new Score();
-        this.score1 = new Score();
         this.loader.onComplete.add(this._onLoadComplete, this);
         this.loader.load();
     }
@@ -65,7 +63,6 @@ export class Game extends PIXI.Application {
         this.stage.addChild(this.board);
         this.board.buildCellBalls(initial_balls_count, null);
         this.board.on('onCheck', this.callQue, this);
-        console.log(this);
     }
     buildQueue() {
         const { cell_width, cell_line_style } = BoardConfig;
@@ -86,26 +83,24 @@ export class Game extends PIXI.Application {
     }
 
     callQue(x) {
-        console.log(x);
-
         const { queue_balls_count } = BoardConfig;
-
         if (x === 'game over') {
-            console.log(8);
-
             this.loseGame();
 
             if (this.los.click) {
-                console.log(7);
-
                 this.destroyContainer();
             }
         }
         this.board.queCollors = this.x;
         this.queue.buildBall();
         if (x > 0) {
+            board: Board;
+            queue: Queue;
+            score: Score;
+            score1: Score;
+            los: LoseGame;
             this.score.yourScore += x;
-            this.score.changeScore('Your', this.score.yourScore);
+            this.score.getYourScore(this.score.yourScore);
 
             if (this.score.yourScore > this.score.highScore) {
                 this.score.highScore = this.score.yourScore;
@@ -116,46 +111,47 @@ export class Game extends PIXI.Application {
     }
 
     destroyContainer() {
-        console.log(7);
-
         this.board.destroy();
         this.queue.destroy();
         this.score.destroy();
-        this.score1.destroy();
         this.los.destroy();
         this._onLoadComplete();
     }
 
     creteScore() {
-        this.score1.getHighScore();
-        this.score.getYourScore();
-        this.score.changeScore('Your', this.score.yourScore);
+        this.score = new Score();
 
-        this.score1.changeScore('High', this.score.highScore);
+        this.score.getYourScore(this.score.yourScore);
+        this.score.getHighScore(this.score.highScore);
+        this.changeScore();
+        console.log(this.score);
+        this.score.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
+        this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
 
-        this.score.position.set(this.screen.width * 0.5, this.screen.height * 0.15);
-        this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
-        this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
-        this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
         this.stage.addChild(this.score);
-        this.stage.addChild(this.score1);
     }
     save() {
         localStorage.setItem('highScore', `${this.score.highScore}`);
     }
 
     changeScore() {
-        this.score1.changeScore('High', this.score.highScore);
+        console.log(71);
 
-        this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
+        this.score.getHighScore(this.score.highScore);
+        this.score.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
+        console.log(25);
+
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
-        this.stage.addChild(this.score1);
+        this.stage.addChild(this.score);
     }
 
     loseGame() {
         this.los = new LoseGame();
         this.los.on('_onClick', this.destroyContainer, this);
         this.los.buildBoard(this.screen.width, this.screen.height, 0.3);
+        this.los.buildLosBoard(this.screen.width, this.screen.height, 1);
+        this.los.buildResetButton();
+        this.los.callScore(this.score.highScore, this.score.yourScore);
         this.los.backCollor.pivot.set(this.los.backCollor.width * 0.5, this.los.backCollor.height * 0.5);
         this.los.backCollor.position.set(this.screen.width * 0.5, this.screen.height * 0.5);
         this.stage.addChild(this.los);
