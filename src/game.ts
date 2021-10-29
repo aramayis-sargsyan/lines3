@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Board } from './board/board';
 import { BoardConfig } from './config';
+import { LoseGame } from './loseGame';
 import { Queue } from './queue';
 import { Score } from './score';
 
@@ -9,6 +10,7 @@ export class Game extends PIXI.Application {
     queue: Queue;
     score: Score;
     score1: Score;
+    los: LoseGame;
 
     x: number[];
     constructor() {
@@ -87,6 +89,18 @@ export class Game extends PIXI.Application {
         console.log(x);
 
         const { queue_balls_count } = BoardConfig;
+
+        if (x === 'game over') {
+            console.log(8);
+
+            this.loseGame();
+
+            if (this.los.click) {
+                console.log(7);
+
+                this.destroyContainer();
+            }
+        }
         this.board.queCollors = this.x;
         this.queue.buildBall();
         if (x > 0) {
@@ -99,6 +113,17 @@ export class Game extends PIXI.Application {
                 this.save();
             }
         }
+    }
+
+    destroyContainer() {
+        console.log(7);
+
+        this.board.destroy();
+        this.queue.destroy();
+        this.score.destroy();
+        this.score1.destroy();
+        this.los.destroy();
+        this._onLoadComplete();
     }
 
     creteScore() {
@@ -125,6 +150,15 @@ export class Game extends PIXI.Application {
         this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
         this.stage.addChild(this.score1);
+    }
+
+    loseGame() {
+        this.los = new LoseGame();
+        this.los.on('_onClick', this.destroyContainer, this);
+        this.los.buildBoard(this.screen.width, this.screen.height, 0.3);
+        this.los.backCollor.pivot.set(this.los.backCollor.width * 0.5, this.los.backCollor.height * 0.5);
+        this.los.backCollor.position.set(this.screen.width * 0.5, this.screen.height * 0.5);
+        this.stage.addChild(this.los);
     }
 
     _update() {}

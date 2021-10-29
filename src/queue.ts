@@ -24,7 +24,7 @@ export class Queue extends Container {
         for (let i = 0; i < queue_balls_count; i++) {
             const queueCell = new Cell(queue_balls_count, 0);
             queueCell.i = i;
-            queueCell.build(cell_line_style);
+            queueCell.build(cell_line_style, cell_width);
             queueCell.position.set(queueCell.i * (cell_width + 1), cell_width);
             queueCell.tint = 0x555555;
             this.queueCells.push(queueCell);

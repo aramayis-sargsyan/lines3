@@ -6,6 +6,7 @@ export class Score extends Text {
     style: TextStyle;
     constructor() {
         super('');
+
         this.style = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 18,
