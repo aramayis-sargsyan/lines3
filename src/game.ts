@@ -22,7 +22,8 @@ export class Game extends PIXI.Application {
 
         this.ticker.add(this._update, this);
         this.ticker.start();
-
+        this.score = new Score();
+        this.score1 = new Score();
         this.loader.onComplete.add(this._onLoadComplete, this);
         this.loader.load();
     }
@@ -62,6 +63,7 @@ export class Game extends PIXI.Application {
         this.stage.addChild(this.board);
         this.board.buildCellBalls(initial_balls_count, null);
         this.board.on('onCheck', this.callQue, this);
+        console.log(this);
     }
     buildQueue() {
         const { cell_width, cell_line_style } = BoardConfig;
@@ -82,24 +84,46 @@ export class Game extends PIXI.Application {
     }
 
     callQue(x) {
+        console.log(x);
+
         const { queue_balls_count } = BoardConfig;
-        this.score.yourScore += x;
-        console.warn(this.score.yourScore);
         this.board.queCollors = this.x;
         this.queue.buildBall();
+        if (x > 0) {
+            this.score.yourScore += x;
+            this.score.changeScore('Your', this.score.yourScore);
+
+            if (this.score.yourScore > this.score.highScore) {
+                this.score.highScore = this.score.yourScore;
+                this.changeScore();
+                this.save();
+            }
+        }
     }
 
     creteScore() {
-        this.score = new Score();
-        this.score.getYourScore();
-        this.score1 = new Score();
-
         this.score1.getHighScore();
+        this.score.getYourScore();
+        this.score.changeScore('Your', this.score.yourScore);
+
+        this.score1.changeScore('High', this.score.highScore);
+
         this.score.position.set(this.screen.width * 0.5, this.screen.height * 0.15);
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
         this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
         this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
         this.stage.addChild(this.score);
+        this.stage.addChild(this.score1);
+    }
+    save() {
+        localStorage.setItem('highScore', `${this.score.highScore}`);
+    }
+
+    changeScore() {
+        this.score1.changeScore('High', this.score.highScore);
+
+        this.score1.position.set(this.screen.width * 0.5, this.screen.height * 0.2);
+        this.queue.pivot.set(this.queue.width * 0.5, this.queue.height * 0.5);
         this.stage.addChild(this.score1);
     }
 

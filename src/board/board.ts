@@ -70,7 +70,6 @@ export class Board extends Container {
 
             if (collor) {
                 color = collor[i];
-                console.log(color);
             } else {
                 color = Math.floor(getRandomInRange(0, 5));
             }
